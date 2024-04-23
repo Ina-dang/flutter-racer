@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/text.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter_racer/components/life_heart.dart';
 import 'package:flutter_racer/components/obstacle.dart';
 
@@ -115,7 +116,7 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
       },
     );
 
-    // 플레이어 컴포넌트 추가
+    // 5. 플레이어 컴포넌트 추가
     add(player);
     add(leftMoveBtn);
     add(rightMoveBtn);
@@ -123,6 +124,16 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
       add(lifeHeart);
     }
     add(scoreText);
+
+    // 6. 배경음악 재생
+    startBgmMusic();
+  }
+
+  // 종료되었을 때 생명주기
+  @override
+  void onDispose() {
+    stopBgmMusic();
+    super.onDispose();
   }
 
   @override
@@ -178,6 +189,7 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     print('onDamage');
     print(lifeHeartList.isNotEmpty);
     if (lifeHeartList.isNotEmpty) {
+      FlameAudio.play('sfx/car_crash.ogg'); // 일회성 사운드
       remove(lifeHeartList[lifeHeartList.length - 1]);
       lifeHeartList.removeLast();
       return;
@@ -203,5 +215,17 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     Future.delayed(Duration(milliseconds: 500), () {
       paused = true;
     });
+  }
+
+  void startBgmMusic() {
+    // 배경음악 재생 (실기기로 해야 노래나옴)
+    FlameAudio.bgm.initialize();
+    FlameAudio.bgm.play('music/level2.wav');
+  }
+
+  void stopBgmMusic() {
+    // 배경음악 정지
+    FlameAudio.bgm.stop();
+    FlameAudio.bgm.dispose();
   }
 }
