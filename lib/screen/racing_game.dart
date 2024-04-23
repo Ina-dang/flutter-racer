@@ -2,18 +2,21 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
+import 'package:flutter_racer/components/life_heart.dart';
+
+import '../components/player.dart';
 
 class RacingGame extends FlameGame {
   /// 게임 로직에 사용될 오브젝트 클래스 선언
-  Player player;
-  MoveButton leftMoveBtn, rightMoveBtn;
+  late Player player; // late => 늦게 하겠다
+  // late MoveButton leftMoveBtn, rightMoveBtn;
   List<LifeHeart> lifeHeartList = [];
 
   /// 로드 될 이미지 변수 선언
-  Sprite playerSprite;
-  Sprite obstacleSprite;
-  Sprite leftMoveButtonSprite;
-  Sprite rightMoveButtonSprite;
+  late Sprite playerSprite;
+  late Sprite obstacleSprite;
+  late Sprite leftMoveButtonSprite;
+  late Sprite rightMoveButtonSprite;
 
   /// 게임개발 생명주기
   @override
@@ -30,8 +33,6 @@ class RacingGame extends FlameGame {
     obstacleSprite = Sprite(obstacleImg);
     leftMoveButtonSprite = Sprite(leftMoveImg);
     rightMoveButtonSprite = Sprite(rightMoveImg);
-
-    
 
     return super.onLoad();
   }
