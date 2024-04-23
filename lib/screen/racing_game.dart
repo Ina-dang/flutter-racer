@@ -4,15 +4,17 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:flame/text.dart';
 import 'package:flutter_racer/components/life_heart.dart';
 import 'package:flutter_racer/components/obstacle.dart';
 
+import '../components/move_button.dart';
 import '../components/player.dart';
 
 class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   /// 게임 로직에 사용될 오브젝트 클래스 선언
   late Player player; // late => 늦게 하겠다
-  // late MoveButton leftMoveBtn, rightMoveBtn;
+  late MoveButton leftMoveBtn, rightMoveBtn;
   List<LifeHeart> lifeHeartList = [];
 
   /// 로드 될 이미지 변수 선언
@@ -24,6 +26,7 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   double nextSpawnSeconds = 0; // 다음 장애물 생성까지의 시간
   int currentScore = 0; // 현재 점수
   // Function onGameOver; // 게임오버가 된걸 알려주는 콜백함수
+  int playerDirection = 0; // 플레이어 이동 방향 상태 변수 (0: 정지, 1: 오른쪽, -1: 왼쪽)
 
   @override
   Color backgroundColor() {
@@ -46,6 +49,19 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     leftMoveButtonSprite = Sprite(leftMoveImg);
     rightMoveButtonSprite = Sprite(rightMoveImg);
 
+    lifeHeartList.add(LifeHeart(
+      position: Vector2(30, 60),
+      heartSprite: Sprite(heartImg),
+    ));
+    lifeHeartList.add(LifeHeart(
+      position: Vector2(60, 60),
+      heartSprite: Sprite(heartImg),
+    ));
+    lifeHeartList.add(LifeHeart(
+      position: Vector2(90, 60),
+      heartSprite: Sprite(heartImg),
+    ));
+
     // 3. player 생성 size. 은 디바이스 사이즈의 x, y
     player = Player(
       position: Vector2(size.x * 0.25, size.y - 20),
@@ -53,8 +69,40 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
       damageCallback: onDamage,
     );
 
+    // 4. movebutton 생성
+    leftMoveBtn = MoveButton(
+      direction: 'left',
+      position: Vector2(30, size.y - 80),
+      moveButtonSprite: leftMoveButtonSprite,
+      onTabMoveButton: (isTapping) {
+        if (isTapping) {
+          playerDirection = -1;
+        } else {
+          playerDirection = 0;
+        }
+      },
+    );
+
+    rightMoveBtn = MoveButton(
+      direction: 'right',
+      position: Vector2(size.x - 30, size.y - 80),
+      moveButtonSprite: rightMoveButtonSprite,
+      onTabMoveButton: (isTapping) {
+        if (isTapping) {
+          playerDirection = 1;
+        } else {
+          playerDirection = 0;
+        }
+      },
+    );
+
     // 플레이어 컴포넌트 추가
     add(player);
+    add(leftMoveBtn);
+    add(rightMoveBtn);
+    for (LifeHeart lifeHeart in lifeHeartList) {
+      add(lifeHeart);
+    }
   }
 
   @override
@@ -75,5 +123,32 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   void onDamage() {
     // 플레이어가 데미지를 입었을 때 하트가 감소하는 메서드
     print('onDamage');
+    print(lifeHeartList.isNotEmpty);
+    if (lifeHeartList.isNotEmpty) {
+      remove(lifeHeartList[lifeHeartList.length - 1]);
+      lifeHeartList.removeLast();
+      return;
+    }
+
+    // 게임오버 표시
+    add(
+      TextComponent(
+        text: "  GAME OVER \nTouch To Main",
+        textRenderer: TextPaint(
+          style: TextStyle(
+            fontSize: 32,
+            color: Color(0xff000000),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        anchor: Anchor.center,
+        position: Vector2(size.x / 2, size.y / 2),
+      ),
+    );
+
+    // 일정 딜레이 이후에 게임 일시정지
+    Future.delayed(Duration(milliseconds: 500), () {
+      paused = true;
+    },);
   }
 }
