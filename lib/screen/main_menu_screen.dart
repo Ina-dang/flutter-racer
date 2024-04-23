@@ -5,9 +5,52 @@ class MainMenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 화면을 그리는곳
+    /// 화면을 그리는곳
     return Scaffold(
-      body: Stack(children: [Image.asset('assets/images/racing_main.png')]),
+      /// Stack: 배열 배치 순서에 따라 쌓아 올리는 위젯
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            'assets/images/racing_main.png',
+            fit: BoxFit.cover,
+            opacity: AlwaysStoppedAnimation(0.4),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              /// 제목 텍스트
+              Text(
+                'Flutter Racer',
+                style: TextStyle(
+                  fontSize: 60,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              /// 시작 (Start) 버튼
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  // 버튼을 클릭하면 이곳 내부가 실행됨.
+                },
+                child: Text(
+                  'GAME START',
+                  style: TextStyle(
+                    fontSize: 32,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }
