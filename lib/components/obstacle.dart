@@ -1,5 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter_racer/components/player.dart';
 
 class Obstacle extends SpriteComponent with HasGameRef, CollisionCallbacks {
   Sprite obstacleSprite; // onload에서 맞물리기위해 전역변수 설정
@@ -9,10 +10,10 @@ class Obstacle extends SpriteComponent with HasGameRef, CollisionCallbacks {
     required position,
     required this.obstacleSprite,
   }) : super(
-    position: position,
-    size: Vector2.all(64),
-    anchor: Anchor.bottomCenter, // 기본 배치 위치 지정
-  );
+          position: position,
+          size: Vector2.all(64),
+          anchor: Anchor.bottomCenter, // 기본 배치 위치 지정
+        );
 
   @override
   Future<void> onLoad() async {
@@ -33,6 +34,16 @@ class Obstacle extends SpriteComponent with HasGameRef, CollisionCallbacks {
     // 화면바깥으로 벗어나면 자동으로 오브젝트 삭제
     if (position.y - size.y > gameRef.size.y) {
       removeFromParent();
+    }
+  }
+
+  @override
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is Player) {
+      removeFromParent();
+    } else {
+      super.onCollisionStart(intersectionPoints, other);
     }
   }
 }
