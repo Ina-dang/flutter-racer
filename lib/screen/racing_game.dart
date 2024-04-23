@@ -25,9 +25,12 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
   double nextSpawnSeconds = 0; // 다음 장애물 생성까지의 시간
   int currentScore = 0; // 현재 점수
-  // Function onGameOver; // 게임오버가 된걸 알려주는 콜백함수
+  Function onGameOver; // 게임오버가 된걸 알려주는 콜백함수
   int playerDirection = 0; // 플레이어 이동 방향 상태 변수 (0: 정지, 1: 오른쪽, -1: 왼쪽)
 
+  // 생성자 추가 해서 뒤 화면으로 보낼수 있도록 gameOver callback 만들기
+  RacingGame({required this.onGameOver});
+  
   @override
   Color backgroundColor() {
     return Color(0xffa2a2a2);
@@ -104,6 +107,14 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
       add(lifeHeart);
     }
   }
+  @override
+  void onTapUp(TapUpEvent event) {
+    if(paused){
+      // 일시정지 == 게임오버 상황일 때 내부 로직 수행
+      onGameOver.call();
+    }
+    super.onTapUp(event);
+  }
 
   @override
   void update(double dt) {
@@ -149,6 +160,6 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     // 일정 딜레이 이후에 게임 일시정지
     Future.delayed(Duration(milliseconds: 500), () {
       paused = true;
-    },);
+    });
   }
 }

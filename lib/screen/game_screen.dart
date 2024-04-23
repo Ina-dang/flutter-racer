@@ -9,7 +9,7 @@ class GameScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GameWidget(
-        game: RacingGame(),
+        game: RacingGame(onGameOver: ()=>Navigator.pop(context)) , //현재 화면에서 back
       ),
     );
   }
