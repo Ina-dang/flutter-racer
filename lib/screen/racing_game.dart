@@ -23,14 +23,16 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   late Sprite leftMoveButtonSprite;
   late Sprite rightMoveButtonSprite;
 
-  double nextSpawnSeconds = 0; // 다음 장애물 생성까지의 시간
   int currentScore = 0; // 현재 점수
+  late TextComponent scoreText;
+
+  double nextSpawnSeconds = 0; // 다음 장애물 생성까지의 시간
   Function onGameOver; // 게임오버가 된걸 알려주는 콜백함수
   int playerDirection = 0; // 플레이어 이동 방향 상태 변수 (0: 정지, 1: 오른쪽, -1: 왼쪽)
 
   // 생성자 추가 해서 뒤 화면으로 보낼수 있도록 gameOver callback 만들기
   RacingGame({required this.onGameOver});
-  
+
   @override
   Color backgroundColor() {
     return Color(0xffa2a2a2);
@@ -64,6 +66,20 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
       position: Vector2(90, 60),
       heartSprite: Sprite(heartImg),
     ));
+
+    //  스코어 텍스트 컴포넌트
+    scoreText = TextComponent(
+      text: "0",
+      textRenderer: TextPaint(
+        style: TextStyle(
+          fontSize: 32,
+          color: Color(0xff000000),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      anchor: Anchor.topRight,
+      position: Vector2(size.x - 60, 50),
+    );
 
     // 3. player 생성 size. 은 디바이스 사이즈의 x, y
     player = Player(
@@ -106,10 +122,12 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     for (LifeHeart lifeHeart in lifeHeartList) {
       add(lifeHeart);
     }
+    add(scoreText);
   }
+
   @override
   void onTapUp(TapUpEvent event) {
-    if(paused){
+    if (paused) {
       // 일시정지 == 게임오버 상황일 때 내부 로직 수행
       onGameOver.call();
     }
@@ -120,7 +138,7 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   void update(double dt) {
     super.update(dt);
 
-    // 장애물 랜덤 생성
+    /// 장애물 랜덤 생성
     nextSpawnSeconds -= dt;
     if (nextSpawnSeconds < 0) {
       add(Obstacle(
@@ -129,6 +147,30 @@ class RacingGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     }
     // 장애물생성 시간 랜덤
     nextSpawnSeconds = 0.3 * Random().nextDouble() * 2;
+
+    /// 스코어 증가 로직
+    if (!paused) {
+      currentScore++;
+      scoreText.text = currentScore.toString();
+    }
+
+    /// player move 로직
+    if (playerDirection == 1) {
+      // 오른쪽 이동
+      player.position = Vector2(
+          player.position.x >= size.x - 30
+              ? player.position.x
+              : player.position.x + 7,
+          player.position.y);
+    } else if (playerDirection == -1) {
+      // 왼쪽 이동
+      player.position = Vector2(
+          player.position.x <= 30 ? player.position.x : player.position.x - 7,
+          player.position.y);
+    } else {
+      // 아무 버튼도 조작하고 있지 않을 때
+      player.position = Vector2(player.position.x, player.position.y);
+    }
   }
 
   void onDamage() {
