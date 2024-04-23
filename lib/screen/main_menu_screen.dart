@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_racer/screen/game_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
@@ -7,6 +8,7 @@ class MainMenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     /// 화면을 그리는곳
     return Scaffold(
+
       /// Stack: 배열 배치 순서에 따라 쌓아 올리는 위젯
       body: Stack(
         fit: StackFit.expand,
@@ -19,6 +21,7 @@ class MainMenuScreen extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+
               /// 제목 텍스트
               Text(
                 'Flutter Racer',
@@ -37,7 +40,10 @@ class MainMenuScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  // 버튼을 클릭하면 이곳 내부가 실행됨.
+                  // 버튼을 클릭하면 게임화면으로 이동
+                  Navigator.push(context, MaterialPageRoute(builder: (
+                      context) => GameScreen(),
+                  ));
                 },
                 child: Text(
                   'GAME START',
