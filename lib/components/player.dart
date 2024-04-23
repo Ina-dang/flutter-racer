@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter_racer/components/obstacle.dart';
 
 // 레이싱 카 오브젝트
 class Player extends SpriteComponent with CollisionCallbacks {
